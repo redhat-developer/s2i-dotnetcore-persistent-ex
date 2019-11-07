@@ -84,12 +84,16 @@ namespace RazorPagesContacts
 
             // If there is no explicit configuration, try to pick an appropriate one by inspecting environment variables.
             // We support a PostgreSQL database that was created and linked with odo (https://github.com/openshift/odo).
+            // And a secret from 'oc new-app postgresql-ephemeral' augmented with a 'database-service' envvar.
 
             if (dbProvider == null)
             {
                 // 'odo' PostgreSQL has a 'uri' envvar that starts with 'postgres://'.
                 string uri = Configuration.GetValue<string>("uri");
-                if (uri != null && uri.StartsWith("postgres://"))
+                string database_service = Configuration.GetValue<string>("database-service");
+                // 'oc' PostgreSQL has a 'database-service' envvar.
+                if ((uri != null && uri.StartsWith("postgres://")) ||
+                    (database_service != null))
                 {
                     dbProvider = DbProvider.PostgreSQL;
                 }
@@ -102,13 +106,35 @@ namespace RazorPagesContacts
             switch (dbProvider)
             {
                 case DbProvider.PostgreSQL:
+                    string database_name = null;
+                    string host = null;
+                    int port = -1;
+                    string password = null;
+                    string username = null;
+
                     // 'odo' environment variables for PostgreSQL.
-                    string database_name = Configuration.GetValue<string>("database_name");
-                    string password = Configuration.GetValue<string>("password");
                     Uri uri = Configuration.GetValue<Uri>("uri");
-                    string host = uri.Host;
-                    int port = uri.Port == -1 ? 5432 : uri.Port;
-                    string username = Configuration.GetValue<string>("username");
+                    if (uri != null)
+                    {
+                        database_name = Configuration.GetValue<string>("database_name");
+                        password = Configuration.GetValue<string>("password");
+                        host = uri.Host;
+                        port = uri.Port == -1 ? 5432 : uri.Port;
+                        username = Configuration.GetValue<string>("username");
+                    }
+                    else
+                    {
+                        host = Configuration.GetValue<string>("database-service");
+                        // 'oc new-app postgresql-ephemeral' environment variables for PostgreSQL.
+                        if (host != null)
+                        {
+                            database_name = Configuration.GetValue<string>("database-name");
+                            username = Configuration.GetValue<string>("database-user");
+                            password = Configuration.GetValue<string>("database-password");
+                            port = 5432;
+                        }
+                    }
+                    
                     connectionString = $"Host={host};Port={port};Database={database_name};Username={username};Password={password}";
                     break;
                 case DbProvider.InMemory:
