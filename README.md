@@ -21,20 +21,8 @@ $ oc new-app postgresql-ephemeral
 # Add the .NET Core application
 $ oc new-app dotnet:3.0~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnetcore-3.0 --context-dir app
 
-# Edit the deployment config to add the postgresql secret, and 'database-service' envvar
-$ oc edit dc/s2i-dotnetcore-persistent-ex
-#      containers:
-#        - name: ..
-#          ...
-#          ports:
-#            - containerPort: 8080
-# -- ADD THIS --
-#          envFrom:
-#          - secretRef:
-#              name: postgresql
-#          env:
-#            - name: database-service
-#              value: postgresql
+# Add envvars from the the postgresql secret, and database service name envvar.
+$ oc set env dc/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql
 
 # Make the .NET Core application accessible externally and show the url
 $ oc expose service s2i-dotnetcore-persistent-ex
