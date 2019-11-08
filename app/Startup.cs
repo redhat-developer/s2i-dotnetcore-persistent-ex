@@ -90,7 +90,7 @@ namespace RazorPagesContacts
             {
                 // 'odo' PostgreSQL has a 'uri' envvar that starts with 'postgres://'.
                 string uri = Configuration.GetValue<string>("uri");
-                string database_service = Configuration.GetValue<string>("database-service");
+                string database_service = GetOcSetConfigurationValue("database-service");
                 // 'oc' PostgreSQL has a 'database-service' envvar.
                 if ((uri != null && uri.StartsWith("postgres://")) ||
                     (database_service != null))
@@ -124,17 +124,17 @@ namespace RazorPagesContacts
                     }
                     else
                     {
-                        host = Configuration.GetValue<string>("database-service");
+                        host = GetOcSetConfigurationValue("database-service");
                         // 'oc new-app postgresql-ephemeral' environment variables for PostgreSQL.
                         if (host != null)
                         {
-                            database_name = Configuration.GetValue<string>("database-name");
-                            username = Configuration.GetValue<string>("database-user");
-                            password = Configuration.GetValue<string>("database-password");
+                            database_name = GetOcSetConfigurationValue("database-name");
+                            username = GetOcSetConfigurationValue("database-user");
+                            password = GetOcSetConfigurationValue("database-password");
                             port = 5432;
                         }
                     }
-                    
+
                     connectionString = $"Host={host};Port={port};Database={database_name};Username={username};Password={password}";
                     break;
                 case DbProvider.InMemory:
@@ -145,6 +145,15 @@ namespace RazorPagesContacts
 
             return (dbProvider.Value, connectionString);
         }
+
+        private T GetOcSetConfigurationValue<T>(string name)
+        {
+            return Configuration.GetValue<T>(name) ??
+                Configuration.GetValue<T>(name.Replace('-', '_').ToUpper()); // oc set-env --from-secret changes the names.
+        }
+
+        private string GetOcSetConfigurationValue(string name)
+            => GetOcSetConfigurationValue<string>(name);
 
         private static void MigrateDatabase(IApplicationBuilder app)
         {
