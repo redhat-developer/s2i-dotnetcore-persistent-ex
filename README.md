@@ -29,7 +29,7 @@ $ oc expose service s2i-dotnetcore-persistent-ex
 $ oc get route s2i-dotnetcore-persistent-ex
 ```
 
-## Deploy using the OpenShift Do ('do')
+## Deploy using the OpenShift Do ('odo')
 
 ```sh
 # Use git to check out the .NET Core application
