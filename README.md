@@ -19,7 +19,7 @@ $ oc new-project mydemo
 $ oc new-app postgresql-ephemeral
 
 # Add the .NET Core application
-$ oc new-app dotnet:3.0~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnetcore-3.0 --context-dir app
+$ oc new-app dotnet:3.1~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnetcore-3.1 --context-dir app
 
 # Add envvars from the the postgresql secret, and database service name envvar.
 $ oc set env dc/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql
@@ -35,7 +35,7 @@ $ oc get route s2i-dotnetcore-persistent-ex
 # Use git to check out the .NET Core application
 $ git clone https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex
 $ cd s2i-dotnetcore-persistent-ex/app
-$ git checkout dotnetcore-3.0
+$ git checkout dotnetcore-3.1
 
 # Create a new OpenShift project
 $ odo project create mydemo
@@ -44,7 +44,7 @@ $ odo project create mydemo
 $ odo service create postgresql-ephemeral
 
 # Add a component for the .NET Core application
-$ odo create dotnet:3.0
+$ odo create dotnet:3.1
 
 # Make the .NET Core application accessible externally
 $ odo url create
