@@ -11,7 +11,8 @@ namespace RazorPagesContacts
     enum DbProvider
     {
         InMemory,
-        PostgreSQL
+        PostgreSQL,
+        Mssql
     }
 
     public class Startup
@@ -42,6 +43,12 @@ namespace RazorPagesContacts
                     services.AddDbContext<AppDbContext>(options =>
                               options.UseInMemoryDatabase("name"));
                     _migrateDatabase = false;
+                    break;
+                case DbProvider.Mssql:
+                    Logger.LogInformation("Using Mssql database");
+                    services.AddDbContext<AppDbContext, MssqlDbContext>(options =>
+                              options.UseSqlServer(connectionString));
+                    _migrateDatabase = true;
                     break;
                 default:
                     throw new ArgumentException($"Unknown db provider: {dbProvider}");
@@ -85,27 +92,37 @@ namespace RazorPagesContacts
             // If there is no explicit configuration, try to pick an appropriate one by inspecting environment variables.
             // We support a PostgreSQL database that was created and linked with odo (https://github.com/openshift/odo).
             // And a secret from 'oc new-app postgresql-ephemeral' augmented with a 'database-service' envvar.
+            // Setting 'MSSQL_SA_PASSWORD' uses Sql Server.
 
             if (dbProvider == null)
             {
-                // 'odo' PostgreSQL has a 'uri' envvar that starts with 'postgres://'.
-                string uri = Configuration.GetValue<string>("uri");
-                string database_service = GetOcSetConfigurationValue("database-service");
-                // 'oc' PostgreSQL has a 'database-service' envvar.
-                if ((uri != null && uri.StartsWith("postgres://")) ||
-                    (database_service != null))
+                string saPassword = Configuration.GetValue<string>("MSSQL_SA_PASSWORD");
+                if (saPassword != null)
                 {
-                    dbProvider = DbProvider.PostgreSQL;
+                    dbProvider = DbProvider.Mssql;
                 }
                 else
                 {
-                    dbProvider = DbProvider.InMemory;
+                    // 'odo' PostgreSQL has a 'uri' envvar that starts with 'postgres://'.
+                    string uri = Configuration.GetValue<string>("uri");
+                    string database_service = GetOcSetConfigurationValue("database-service");
+                    // 'oc' PostgreSQL has a 'database-service' envvar.
+                    if ((uri != null && uri.StartsWith("postgres://")) ||
+                        (database_service != null))
+                    {
+                        dbProvider = DbProvider.PostgreSQL;
+                    }
+                    else
+                    {
+                        dbProvider = DbProvider.InMemory;
+                    }
                 }
             }
 
             switch (dbProvider)
             {
                 case DbProvider.PostgreSQL:
+                {
                     string database_name = null;
                     string host = null;
                     int port = -1;
@@ -136,8 +153,18 @@ namespace RazorPagesContacts
                     }
 
                     connectionString = $"Host={host};Port={port};Database={database_name};Username={username};Password={password}";
+                }
                     break;
                 case DbProvider.InMemory:
+                    break;
+                case DbProvider.Mssql:
+                {
+                    string server = Configuration["MSSQL_SERVICE_NAME"] ?? "localhost";
+                    string password = Configuration["MSSQL_SA_PASSWORD"];
+                    string user = "sa";
+                    string dbName = "myContacts";
+                    connectionString = $@"Server={server};Database={dbName};User Id={user};Password={password};";
+                }
                     break;
                 default:
                     throw new ArgumentException($"Unknown db provider: {dbProvider}");
