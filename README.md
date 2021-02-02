@@ -1,3 +1,15 @@
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/developing_.net_applications_in_rhel_8/using-net-core-on-ocp_gsg
+
+[rdodia-redhat.com@clientvm 0 ~]$  oc adm policy add-role-to-user admin system:serviceaccount:mydemo:jenkins -n test
+
+clusterrole.rbac.authorization.k8s.io/admin added: "system:serviceaccount:mydemo:jenkins"
+
+[rdodia-redhat.com@clientvm 0 ~]$  oc adm policy add-role-to-user admin system:serviceaccount:mydemo:jenkins -n prod
+
+clusterrole.rbac.authorization.k8s.io/admin added: "system:serviceaccount:mydemo:jenkins"
+
+
+
 # .NET Core Sample App for OpenShift
 
 This repository contains an example .NET Core application that can be deployed on OpenShift.
