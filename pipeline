@@ -1,0 +1,56 @@
+pipeline {
+   agent any
+
+   stages {
+      stage('Check Out GIT repo') {
+         steps {
+            git branch: 'dotnetcore-3.1', url: 'https://github.com/redhat-developer/s2i-dotnetcore-ex'
+         }
+      }
+      stage('Deploy Dot Net App in Test Env') {
+         steps {
+            sh "oc new-app dotnet:3.1~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnetcore-3.1 --context-dir app -n test"
+         }
+      }
+      stage('Deploy Postgres DB in Test Env') {
+         steps {
+            sh "oc new-app postgresql-ephemeral -n test"
+         }
+      }
+      stage('Set Postgres credentials for dot net app in Test Env') {
+         steps {
+            sh "oc set env deployments/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql -n test"
+         }
+      }
+      stage('Expose the service for dot net app in Test Env') {
+         steps {
+            sh "oc expose service s2i-dotnetcore-persistent-ex -n test"
+         }
+      }
+      stage('Approve or Reject') {
+         steps {
+            input 'Approve?'
+         }
+      }
+      stage('Deploy Dot Net App in Prod Env') {
+         steps {
+            sh "oc new-app dotnet:3.1~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnetcore-3.1 --context-dir app -n prod"
+         }
+      }
+      stage('Deploy Postgres DB in Prod Env') {
+         steps {
+            sh "oc new-app postgresql-ephemeral -n prod"
+         }
+      }
+      stage('Set Postgres credentials for dot net app in Prod Env') {
+         steps {
+            sh "oc set env deployments/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql -n prod"
+         }
+      }
+      stage('Expose the service for dot net app in Prod Env') {
+         steps {
+            sh "oc expose service s2i-dotnetcore-persistent-ex -n prod"
+         }
+      }
+   }
+}
