@@ -1,20 +1,8 @@
-﻿#define Debug
+﻿using RazorPagesContacts;
 
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+var builder = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
 
-namespace RazorPagesContacts
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
+var app = builder.Build();
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
-    }
-}
+app.Run();
