@@ -1,7 +1,6 @@
-namespace RazorPagesContacts.Data
+namespace RazorPagesContacts.Data;
+
+public class AppConfiguration
 {
-    public class AppConfiguration
-    {
-        public string DatabaseProvider { get; set; }
-    }
+    public string DatabaseProvider { get; set; }
 }
