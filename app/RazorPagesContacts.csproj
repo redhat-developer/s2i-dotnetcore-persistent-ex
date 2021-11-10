@@ -16,7 +16,7 @@
 
      <!-- Different database backends supported by the application -->
      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
-     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-*" />
+     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
