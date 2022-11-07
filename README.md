@@ -7,9 +7,9 @@ The example is a simple CRUD web application that persists information in a data
 The example is meant to be built and run with the [s2i-dotnetcore](https://github.com/redhat-developer/s2i-dotnetcore) builder
 images. The branches of this repository correspond to versions of the s2i-dotnetcore images.
 
-# Deploying the application
+## Deploying the application
 
-## Deploy using the OpenShift client ('oc')
+You can deploy the application using the OpenShift client (`oc`) with the following commands:
 
 ```sh
 # Create a new OpenShift project
@@ -19,7 +19,7 @@ $ oc new-project mydemo
 $ oc new-app postgresql-ephemeral
 
 # Add the .NET Core application
-$ oc new-app dotnet:6.0-ubi8~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnet-6.0 --context-dir app
+$ oc new-app dotnet:7.0-ubi8~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnet-7.0 --context-dir app
 
 # Add envvars from the the postgresql secret, and database service name envvar.
 $ oc set env dc/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql
@@ -29,9 +29,9 @@ $ oc expose service s2i-dotnetcore-persistent-ex
 $ oc get route s2i-dotnetcore-persistent-ex
 ```
 
-# Copyright and License
+## Copyright and License
 
-Copyright 2021 by Red Hat, Inc.
+Copyright 2022 by Red Hat, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this package except in compliance with the License (see the `LICENSE` file
