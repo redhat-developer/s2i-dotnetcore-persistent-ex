@@ -12,6 +12,13 @@ images. The branches of this repository correspond to versions of the s2i-dotnet
 You can deploy the application using the OpenShift client (`oc`) with the following commands:
 
 ```sh
+
+# Make sure .NET image stream is available
+oc describe is dotnet
+
+## If not presented, install it.
+oc create -f https://raw.githubusercontent.com/redhat-developer/s2i-dotnetcore/master/dotnet_imagestreams.json
+
 # Create a new OpenShift project
 $ oc new-project mydemo
 
