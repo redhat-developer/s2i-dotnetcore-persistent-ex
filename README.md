@@ -17,7 +17,7 @@ You can deploy the application using the OpenShift client (`oc`) with the follow
 oc describe is dotnet
 
 ## If not presented, install it.
-oc create -f https://raw.githubusercontent.com/redhat-developer/s2i-dotnetcore/master/dotnet_imagestreams.json
+oc create -f https://raw.githubusercontent.com/redhat-developer/s2i-dotnetcore/main/dotnet_imagestreams.json
 
 # Create a new OpenShift project
 $ oc new-project mydemo
@@ -26,7 +26,7 @@ $ oc new-project mydemo
 $ oc new-app postgresql-ephemeral
 
 # Add the .NET Core application
-$ oc new-app dotnet:7.0-ubi8~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnet-7.0 --context-dir app
+$ oc new-app dotnet:8.0-ubi8~https://github.com/redhat-developer/s2i-dotnetcore-persistent-ex#dotnet-8.0 --context-dir app
 
 # Add envvars from the the postgresql secret, and database service name envvar.
 $ oc set env dc/s2i-dotnetcore-persistent-ex --from=secret/postgresql -e database-service=postgresql
